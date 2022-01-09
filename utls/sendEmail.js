@@ -1,4 +1,5 @@
 
+const { text } = require("express");
 const nodemailer = require("nodemailer");
 
 module.exports = async (email, subject, text) => {
@@ -14,10 +15,13 @@ module.exports = async (email, subject, text) => {
         });
 
         await transporter.sendMail({
+
             from: 'a.kiran.boyle@gmail.com',
             to: email,
             subject: subject,
             text: text,
+
+
         });
         console.log("email sent successfully");
     } catch (error) {
