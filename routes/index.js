@@ -1,10 +1,9 @@
-const router = require("express").Router();
+const { User, validate } = require('../models/User.model');
+const express = require("express");
+const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  res.json("All good in here");
+router.post("/", async (req, res) => {
+  return res.status('200').send({ message: 'all good' })
 });
-
-// You put the next routes here 👇
-// example: router.use("/auth", authRoutes)
 
 module.exports = router;

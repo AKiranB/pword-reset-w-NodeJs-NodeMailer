@@ -7,10 +7,11 @@ import axios from 'axios'
 
 export default function Signup() {
 
-    const [username, setUsername] = useState('');
+    const [name, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-
+    const [email, setEmail] = useState('')
+    const [error, setError] = useState('')
 
     useEffect(() => {
         const apiTest = () => {
@@ -27,43 +28,48 @@ export default function Signup() {
         apiTest()
     }, [])
 
-
-
-    // const signup = (username, password) => {
-    //     return axios.post('api/auth/signup', { username, password })
-    //         .then(response => {
-    //             return response.data;
-    //         })
-    //         .catch(err => {
-    //             return err.response.data
-    //         })
-    // };
-
     const signup = () => {
-        return axios.post('/api/auth/signup', { username, password })
+        return axios.post('/auth/signup', { name, password, email })
             .then(response => {
                 return response.data;
             })
             .catch(err => {
-                return err.response.data
+                console.log(err)
             })
     };
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        signup(username, password)
-            .then(response => {
-                if (response.message) {
-                    setUsername('');
-                    setPassword('');
-                    setMessage(response.message)
+        try {
+            const { data: res } = axios.post('/auth/signup', { name, password, email })
+            setMessage(res.message);
+        } catch (error) {
+            if (
+                error.response &&
+                error.response.status >= 400 &&
+                error.response.status <= 500
+            ) {
+                setError(error.response.data.message);
+            }
+        }
+    };
 
-                } else {
-                    console.log('unable to signup')
-                }
-            })
-            .catch(err => console.log(err))
-    }
+
+    // const handleSubmit = e => {
+    //     e.preventDefault();
+    //     signup(name, password, email)
+    //         .then(response => {
+    //             if (response.message) {
+    //                 setUsername('');
+    //                 setPassword('');
+    //                 setMessage(response.message)
+
+    //             } else {
+    //                 console.log(response.error)
+    //             }
+    //         })
+    //         .catch(err => console.log(err))
+    // }
 
     return (
         <div className='secondaryContainer'>
@@ -72,7 +78,7 @@ export default function Signup() {
                 <TextField
                     type="text"
                     name="username"
-                    value={username}
+                    value={name}
                     onChange={e => setUsername(e.target.value)}
                     className='Input'
                     error={message ? true : false}
@@ -89,11 +95,26 @@ export default function Signup() {
                     label="Password" variant="outlined"
 
                 />
+                <TextField
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className='Input'
+                    error={message ? true : false}
+                    label="email" variant="outlined"
+
+                />
                 <Button variant='contained' type="submit">Create Account </Button>
                 {message && (
                     <h3>{message}</h3>
+
                 )}
                 <p>Already a user? <a href='/login'>- <u>Log In</u></a></p>
+                {error && (
+                    <h3>{error}</h3>
+
+                )}
             </form>
         </div>
     )

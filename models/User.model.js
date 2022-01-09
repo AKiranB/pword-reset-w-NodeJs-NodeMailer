@@ -1,29 +1,32 @@
-const { Schema, model } = require("mongoose");
-const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
 
-const bcryptSalt = process.env.BCRYPT_SALT;
-
-// TODO: Please make sure you edit the user model to whatever makes sense in this case
+const { Schema } = mongoose;
+const Joi = require('joi');
 
 const userSchema = new Schema({
-  username: {
+  name: {
     type: String,
+    required: true,
   },
-  password: String,
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 });
 
+const User = mongoose.model('user', userSchema);
 
+const validate = (user) => {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  });
+  return schema.validate(user);
+};
 
-
-// userSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     return next();
-//   }
-//   const hash = await bcrypt.hash(this.password, Number(bcryptSalt));
-//   this.password = hash;
-//   next();
-// });
-
-const User = model("User", userSchema);
-
-module.exports = User;
+module.exports = { User, validate };
